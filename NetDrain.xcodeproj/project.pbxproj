@@ -25,6 +25,7 @@
 /* Begin PBXFileReference section */
 		9C76E74227580F1200565715 /* NetDrain */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = NetDrain; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C76E74527580F1200565715 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		9CCD4C5C276A1CD20082B79A /* ENG.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ENG.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +59,7 @@
 			isa = PBXGroup;
 			children = (
 				9C76E74527580F1200565715 /* main.cpp */,
+				9CCD4C5C276A1CD20082B79A /* ENG.hpp */,
 			);
 			path = NetDrain;
 			sourceTree = "<group>";
@@ -243,7 +245,9 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 63TGZWY288;
 				ENABLE_HARDENED_RUNTIME = YES;
+				HEADER_SEARCH_PATHS = /usr/local/include;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SYSTEM_HEADER_SEARCH_PATHS = /usr/local/include;
 			};
 			name = Debug;
 		};
@@ -253,7 +257,9 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 63TGZWY288;
 				ENABLE_HARDENED_RUNTIME = YES;
+				HEADER_SEARCH_PATHS = /usr/local/include;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SYSTEM_HEADER_SEARCH_PATHS = /usr/local/include;
 			};
 			name = Release;
 		};

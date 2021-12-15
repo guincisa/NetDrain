@@ -1,14 +1,22 @@
-//
-//  main.cpp
-//  NetDrain
-//
-//  Created by Guglielmo Incisa di Camerana on 01/12/2021.
-//
+//============================================================================
+// Name        : NetDrain.cpp
+// Author      :
+// Version     :
+// Copyright   : Your copyright notice
+// Description : Hello World in C++, Ansi-style
+//============================================================================
 
 #include <iostream>
-//NetDrain
-int main(int argc, const char * argv[]) {
-    // insert code here...
-    std::cout << "Hello, World!\n";
+#include "ENG.hpp"
+using namespace std;
+
+
+
+int main() {
+    cout << "!!!Hello World!!!" << endl; // prints !!!Hello World!!!
+
+    ENG ee;
+
+
     return 0;
 }
