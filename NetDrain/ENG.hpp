@@ -48,8 +48,8 @@ class TH{
     public:
      static mutex mtx, mtxQ;
      static condition_variable cv;
-     static queue<void*> siteq;
-     static string* _website;
+     static queue<string> siteq;
+     //static string _website;
 
      static void runSite (int thid) {
       while(true){
@@ -60,15 +60,15 @@ class TH{
           }
           cout << "gotcha" <<endl;
           mtxQ.lock();
-          string* z = (string*)siteq.front();
+          string z = (string)siteq.front();
           siteq.pop();
           mtxQ.unlock();
 
 
-          cout << " >>>DOING string " << *z <<" "<< thid <<endl;
+          cout << " >>>DOING string " << z <<" "<< thid <<endl;
           lck.unlock();
-          cout << thid << " " <<exec(*z)<<endl;
-          cout << " >>>DONE string " << *z <<" "<< thid <<endl;
+          cout << thid << " " <<exec(z)<<endl;
+          cout << " >>>DONE string " << z <<" "<< thid <<endl;
 
           }
       }
@@ -119,14 +119,15 @@ class TH{
 condition_variable TH::cv;
 mutex TH::mtx;
 mutex TH::mtxQ;
-queue<void*> TH::siteq;
+queue<string> TH::siteq;
 
 class ENG{
 public:
 
 
     //Insert
-    void inq(void* site){
+    void inq(string site){
+        cout << "insert"<<site<<endl;
         TH::mtxQ.lock();
         TH::siteq.push(site);
         TH::cv.notify_all();
@@ -134,22 +135,18 @@ public:
     }
 
     ENG(){
-        int MT=10;
 
         //std::vector<thread> threads(MT);
-        std:thread t1(TH::runSite,1),t2(TH::runSite,2),t3(TH::runSite,3);
-        thread t4(TH::runSite,4),t5(TH::runSite,5),t6(TH::runSite,6);
+        std:thread t[20];
+        
 
-//        // spawn n threads:
-//        for (int i = 0; i < MT; i++) {
-//            threads[i] =  thread(TH::runSite, i+1);
-//        }
-        t1.join();
-        t2.join();
-        t3.join();
-        t4.join();
-        t5.join();
-        t6.join();
+        // spawn n threads:
+        for (int i = 0; i < 20; i++) {
+            t[i] =  thread(TH::runSite, i+1);
+        }
+        for (int i = 0; i < 20; i++) {
+            t[i].join();
+        }
 
         cout << "spwaned" <<endl;
 
