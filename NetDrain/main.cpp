@@ -23,8 +23,8 @@ int main() {
     string* s1 = new string("www.apple.com");
     string* s2 = new string("www.nokia.com");
     string* s3 = new string("www.microsoft.com");
-    string* s4 = new string("www.ibm.com");
-    string* s5 = new string("www.google.com");
+    string* s4 = new string("192.168.1.1");
+    string* s5 = new string("www.ecuavisa.com");
     
     cout << s1 << " " << *s1<<endl;
     cout << s2 << " " << *s2<<endl;

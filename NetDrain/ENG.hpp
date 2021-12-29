@@ -35,6 +35,11 @@
 #include <stdexcept>
 #include <stdio.h>
 #include <string>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
 
 using namespace std;
 
@@ -62,33 +67,54 @@ class TH{
 
           cout << " >>>DOING string " << *z <<" "<< thid <<endl;
           lck.unlock();
-          exec("wget "+*z);
+          cout << thid << " " <<exec(*z)<<endl;
           cout << " >>>DONE string " << *z <<" "<< thid <<endl;
 
           }
       }
     
     static string exec(string command) {
-       char buffer[128];
-       string result = "";
+        int sockfd, portno=80, n;
+        struct sockaddr_in serv_addr;
+        struct hostent *server;
 
-       // Open pipe to file
-       FILE* pipe = popen(command.c_str(), "r");
-       if (!pipe) {
-          return "popen failed!";
-       }
+        char buffer[1024];
 
-       // read till end of process:
-       while (!feof(pipe)) {
+        sockfd = socket(AF_INET, SOCK_STREAM, 0);
+        if (sockfd < 0)
+            return "ERR";
+        server = gethostbyname(command.c_str());
+        if (server == NULL) {
+            return "NOHOST";
+        }
+        bzero((char *) &serv_addr, sizeof(serv_addr));
+        serv_addr.sin_family = AF_INET;
+        bcopy((char *)server->h_addr,
+             (char *)&serv_addr.sin_addr.s_addr,
+             server->h_length);
+        serv_addr.sin_port = htons(portno);
+        if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0)
+            return "CONERR";
+        
+        //string Mess = "GET /hello.htm HTTP/1.1\nUser-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\n Host: "+command+"\nAccept-Language: en-us\nAccept-Encoding: gzip, deflate\nConnection: Keep-Alive";
+        string Mess = "GET / HTTP/1.1\nHost: "+command+"\n\n";
 
-          // use buffer to read and add to result
-          if (fgets(buffer, 128, pipe) != NULL)
-             result += buffer;
-       }
+        cout << "["<<Mess<<"]"<<endl;
+        char char_array[Mess.length() + 1];
+        strcpy(char_array, Mess.c_str());
 
-       pclose(pipe);
-       return result;
+        n = write(sockfd,char_array,strlen(char_array));
+        if (n < 0)
+            return "WRIERR";
+        bzero(buffer,256);
+        n = read(sockfd,buffer,1023);
+        if (n < 0)
+            return "REAERR";
+        printf("%s\n",buffer);
+        close(sockfd);
+        return "OK";
     }
+
 };
 condition_variable TH::cv;
 mutex TH::mtx;
