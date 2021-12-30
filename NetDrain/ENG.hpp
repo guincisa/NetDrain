@@ -47,6 +47,7 @@ using namespace std;
 class TH{
     public:
      static mutex mtx, mtxQ;
+     static mutex prt;
      static condition_variable cv;
      static queue<string> siteq;
      //static string _website;
@@ -70,12 +71,16 @@ class TH{
           string rr = exec(z);
           if (rr.compare("ERR")!=0&&rr.compare("NOHOST")!=0&&rr.compare("CONERR")!=0&&rr.compare("WRIERR")!=0&&rr.compare("REARERR")!=0){
               int cr = rr.find("\n");
+              prt.lock();
               cout << z << " " << thid << " " << rr.substr(0,cr) << endl;
+              prt.unlock();
               //cout << " >>>DONE string " << z <<" "<< thid <<endl;
               
           }
           else{
+              prt.lock();
               cout << z << " " << thid << " " << rr << endl;
+              prt.unlock();
           }
       }
 
@@ -145,14 +150,14 @@ public:
     ENG(){
 
         //std::vector<thread> threads(MT);
-        std:thread t[20];
+        std:thread t[50];
         
 
         // spawn n threads:
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 50; i++) {
             t[i] =  thread(TH::runSite, i+1);
         }
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 50; i++) {
             t[i].join();
         }
 
@@ -162,6 +167,15 @@ public:
 
 };
 
+class UTIL{
+public:
+    int active  = 0;
+    void DEB(string s){
+        if (active == 1){
+            cout << "[" << s << "]";
+        }
+    }
+};
 
 
 //int main() {
