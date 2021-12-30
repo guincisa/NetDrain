@@ -129,7 +129,7 @@ public:
 
     //Insert
     void inq(string site){
-        cout << "insert"<<site<<endl;
+        //cout << "insert"<<site<<endl;
         TH::mtxQ.lock();
         TH::siteq.push(site);
         TH::cv.notify_all();
