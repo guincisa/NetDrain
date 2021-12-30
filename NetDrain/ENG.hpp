@@ -101,7 +101,7 @@ class TH{
         //string Mess = "GET /hello.htm HTTP/1.1\nUser-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\n Host: "+command+"\nAccept-Language: en-us\nAccept-Encoding: gzip, deflate\nConnection: Keep-Alive";
         string Mess = "GET / HTTP/1.1\nHost: "+command+"\n\n";
 
-        cout << "["<<Mess<<"]"<<endl;
+        //cout << "["<<Mess<<"]"<<endl;
         char char_array[Mess.length() + 1];
         strcpy(char_array, Mess.c_str());
 
