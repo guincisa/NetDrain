@@ -67,13 +67,19 @@ class TH{
 
           //cout << " >>>DOING string " << z <<" "<< thid <<endl;
           lck.unlock();
-          string rr =exec(z);
-          int cr = rr.find("\n");
-          cout << z << " " << thid << " " << rr.substr(0,cr) << endl;
-          //cout << " >>>DONE string " << z <<" "<< thid <<endl;
-
+          string rr = exec(z);
+          if (rr.compare("ERR")!=0&&rr.compare("NOHOST")!=0&&rr.compare("CONERR")!=0&&rr.compare("WRIERR")!=0&&rr.compare("REARERR")!=0){
+              int cr = rr.find("\n");
+              cout << z << " " << thid << " " << rr.substr(0,cr) << endl;
+              //cout << " >>>DONE string " << z <<" "<< thid <<endl;
+              
+          }
+          else{
+              cout << z << " " << thid << " " << rr << endl;
           }
       }
+
+    }
     
     static string exec(string command) {
         int sockfd, portno=80, n;
