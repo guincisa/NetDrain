@@ -24,7 +24,7 @@ int main() {
     std:thread tENG (th2);
 
     string line;
-    ifstream myfile ("sites.txt");
+    ifstream myfile ("/Users/gug/sites.txt");
     if (myfile.is_open())
     {
       while ( getline (myfile,line) )
@@ -33,7 +33,7 @@ int main() {
           if (_sz!=std::string::npos){
               for (int i = 2; i<256 ; i++){
                   string line2 = line.substr(0,_sz)+std::to_string(i)+line.substr(_sz+1);
-                  cout <<"expand"<<line2<<endl;
+                  //cout <<"expand"<<line2<<endl;
                   ee->inq(line2);
               }
           }else {

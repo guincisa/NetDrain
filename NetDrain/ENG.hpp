@@ -55,20 +55,22 @@ class TH{
       while(true){
           unique_lock<mutex> lck(mtx);
           while(siteq.empty()){
-              cout<<thid<<" waiting"<<endl;
+              //cout<<thid<<" waiting"<<endl;
               cv.wait(lck);
           }
-          cout << "gotcha" <<endl;
+          //cout << "gotcha" <<endl;
           mtxQ.lock();
           string z = (string)siteq.front();
           siteq.pop();
           mtxQ.unlock();
 
 
-          cout << " >>>DOING string " << z <<" "<< thid <<endl;
+          //cout << " >>>DOING string " << z <<" "<< thid <<endl;
           lck.unlock();
-          cout << thid << " " <<exec(z)<<endl;
-          cout << " >>>DONE string " << z <<" "<< thid <<endl;
+          string rr =exec(z);
+          int cr = rr.find("\n");
+          cout << z << " " << thid << " " << rr.substr(0,cr) << endl;
+          //cout << " >>>DONE string " << z <<" "<< thid <<endl;
 
           }
       }
@@ -78,7 +80,7 @@ class TH{
         struct sockaddr_in serv_addr;
         struct hostent *server;
 
-        char buffer[1024];
+        char buffer[256];
 
         sockfd = socket(AF_INET, SOCK_STREAM, 0);
         if (sockfd < 0)
@@ -107,12 +109,12 @@ class TH{
         if (n < 0)
             return "WRIERR";
         bzero(buffer,256);
-        n = read(sockfd,buffer,1023);
+        n = read(sockfd,buffer,255);
         if (n < 0)
             return "REAERR";
-        printf("%s\n",buffer);
+        //printf("%s\n",buffer);
         close(sockfd);
-        return "OK";
+        return string(buffer);
     }
 
 };
