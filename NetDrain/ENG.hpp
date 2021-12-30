@@ -69,19 +69,25 @@ class TH{
           //cout << " >>>DOING string " << z <<" "<< thid <<endl;
           lck.unlock();
           string rr = exec(z);
-          if (rr.compare("ERR")!=0&&rr.compare("NOHOST")!=0&&rr.compare("CONERR")!=0&&rr.compare("WRIERR")!=0&&rr.compare("REARERR")!=0){
-              int cr = rr.find("\n");
-              prt.lock();
-              cout << z << " " << thid << " " << rr.substr(0,cr) << endl;
-              prt.unlock();
-              //cout << " >>>DONE string " << z <<" "<< thid <<endl;
-              
+          if (rr.compare("OK")==0){
+            prt.lock();
+            cout << z << " " << thid << " OK" << endl;
+            prt.unlock();
+
           }
-          else{
-              prt.lock();
-              cout << z << " " << thid << " " << rr << endl;
-              prt.unlock();
-          }
+//         if (rr.compare("ERR")!=0&&rr.compare("NOHOST")!=0&&rr.compare("CONERR")!=0&&rr.compare("WRIERR")!=0&&rr.compare("REAERR")!=0){
+//              int cr = rr.find("\n");
+//              prt.lock();
+//              cout << z << " " << thid << " " << rr.substr(0,cr) << endl;
+//              prt.unlock();
+//              //cout << " >>>DONE string " << z <<" "<< thid <<endl;
+//
+//          }
+//          else{
+//              prt.lock();
+//              cout << z << " " << thid << " " << rr << endl;
+//              prt.unlock();
+//          }
       }
 
     }
@@ -125,7 +131,8 @@ class TH{
             return "REAERR";
         //printf("%s\n",buffer);
         close(sockfd);
-        return string(buffer);
+        //return string(buffer);
+        return "OK";
     }
 
 };
