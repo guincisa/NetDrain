@@ -132,6 +132,7 @@ class TH{
 condition_variable TH::cv;
 mutex TH::mtx;
 mutex TH::mtxQ;
+mutex TH::prt;
 queue<string> TH::siteq;
 
 class ENG{
