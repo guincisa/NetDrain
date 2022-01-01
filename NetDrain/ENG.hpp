@@ -72,7 +72,13 @@ public:
                 prt.lock();
                 cout << *z << " " << thid << " OK" << endl;
                 prt.unlock();
+            }else{
+                prt.lock();
+                cout << *z << " " << thid << " NOK" << endl;
+                prt.unlock();
             }
+            prt.unlock();
+
             delete z;
 
             
