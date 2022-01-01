@@ -45,60 +45,48 @@ using namespace std;
 
 
 class TH{
-    public:
-     static mutex mtx, mtxQ;
-     static mutex prt;
-     static condition_variable cv;
-     static queue<string> siteq;
-     //static string _website;
+public:
+    static mutex mtx, mtxQ;
+    static mutex prt;
+    static condition_variable cv;
+    static queue<string*> siteq;
+    //static string _website;
+    
+    static void runSite (int thid) {
+        while(true){
+            unique_lock<mutex> lck(mtx);
+            while(siteq.empty()){
+                //cout<<thid<<" waiting"<<endl;
+                cv.wait(lck);
+            }
+            //cout << "gotcha" <<endl;
+            mtxQ.lock();
+            string* z = siteq.front();
+            siteq.pop();
+            mtxQ.unlock();
+            
+            
+            //cout << " >>>DOING string " << z <<" "<< thid <<endl;
+            lck.unlock();
+            if (exec(*z).compare("OK")==0){
+                prt.lock();
+                cout << *z << " " << thid << " OK" << endl;
+                prt.unlock();
+            }
+            delete z;
 
-     static void runSite (int thid) {
-      while(true){
-          unique_lock<mutex> lck(mtx);
-          while(siteq.empty()){
-              //cout<<thid<<" waiting"<<endl;
-              cv.wait(lck);
-          }
-          //cout << "gotcha" <<endl;
-          mtxQ.lock();
-          string z = (string)siteq.front();
-          siteq.pop();
-          mtxQ.unlock();
-
-
-          //cout << " >>>DOING string " << z <<" "<< thid <<endl;
-          lck.unlock();
-          string rr = exec(z);
-          if (rr.compare("OK")==0){
-            prt.lock();
-            cout << z << " " << thid << " OK" << endl;
-            prt.unlock();
-
-          }
-//         if (rr.compare("ERR")!=0&&rr.compare("NOHOST")!=0&&rr.compare("CONERR")!=0&&rr.compare("WRIERR")!=0&&rr.compare("REAERR")!=0){
-//              int cr = rr.find("\n");
-//              prt.lock();
-//              cout << z << " " << thid << " " << rr.substr(0,cr) << endl;
-//              prt.unlock();
-//              //cout << " >>>DONE string " << z <<" "<< thid <<endl;
-//
-//          }
-//          else{
-//              prt.lock();
-//              cout << z << " " << thid << " " << rr << endl;
-//              prt.unlock();
-//          }
-      }
-
+            
+        }
+        
     }
     
     static string exec(string command) {
         int sockfd, portno=80, n;
         struct sockaddr_in serv_addr;
         struct hostent *server;
-
+        
         char buffer[256];
-
+        
         sockfd = socket(AF_INET, SOCK_STREAM, 0);
         if (sockfd < 0)
             return "ERR";
@@ -109,20 +97,20 @@ class TH{
         bzero((char *) &serv_addr, sizeof(serv_addr));
         serv_addr.sin_family = AF_INET;
         bcopy((char *)server->h_addr,
-             (char *)&serv_addr.sin_addr.s_addr,
-             server->h_length);
+              (char *)&serv_addr.sin_addr.s_addr,
+              server->h_length);
         serv_addr.sin_port = htons(portno);
         if (connect(sockfd,(struct sockaddr *) &serv_addr,sizeof(serv_addr)) < 0)
             return "CONERR";
         
         //string Mess = "GET /hello.htm HTTP/1.1\nUser-Agent: Mozilla/4.0 (compatible; MSIE5.01; Windows NT)\n Host: "+command+"\nAccept-Language: en-us\nAccept-Encoding: gzip, deflate\nConnection: Keep-Alive";
         string Mess = "GET / HTTP/1.1\nHost: "+command+"\n\n";
-
+        
         //cout << "["<<Mess<<"]"<<endl;
         char char_array[Mess.length() + 1];
         strcpy(char_array, Mess.c_str());
-
-        n = write(sockfd,char_array,strlen(char_array));
+        
+        n = write(sockfd, char_array, strlen(char_array));
         if (n < 0)
             return "WRIERR";
         bzero(buffer,256);
@@ -134,45 +122,50 @@ class TH{
         //return string(buffer);
         return "OK";
     }
-
+    
 };
 condition_variable TH::cv;
 mutex TH::mtx;
 mutex TH::mtxQ;
 mutex TH::prt;
-queue<string> TH::siteq;
+queue<string*> TH::siteq;
 
 class ENG{
 public:
-
-
+    
+    
     //Insert
-    void inq(string site){
+    void inq(string* site){
         //cout << "insert"<<site<<endl;
         TH::mtxQ.lock();
         TH::siteq.push(site);
         TH::cv.notify_all();
         TH::mtxQ.unlock();
     }
-
+    
     ENG(){
-
-        //std::vector<thread> threads(MT);
-        std:thread t[50];
         
-
+        //std::vector<thread> threads(MT);
+#ifdef __APPLE__
+        int MT = 4;
+#else
+        int MT = 50;
+#endif
+    std:thread t[MT];
+        
+        
         // spawn n threads:
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < MT; i++) {
             t[i] =  thread(TH::runSite, i+1);
         }
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < MT; i++) {
             t[i].join();
         }
-
+        
         cout << "spwaned" <<endl;
-
+        
     }
-
+    
 };
 
 class UTIL{

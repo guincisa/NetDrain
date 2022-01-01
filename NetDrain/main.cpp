@@ -24,7 +24,12 @@ int main() {
     std:thread tENG (th2);
 
     string line;
+#ifdef __APPLE__
     ifstream myfile ("/Users/gug/sites.txt");
+#else
+    ifstream myfile ("sites.txt");
+#endif
+
     if (myfile.is_open())
     {
       while ( getline (myfile,line) )
@@ -32,12 +37,13 @@ int main() {
           size_t _sz = line.find("*");
           if (_sz!=std::string::npos){
               for (int i = 2; i<256 ; i++){
-                  string line2 = line.substr(0,_sz)+std::to_string(i)+line.substr(_sz+1);
+                  string* line2 = new string(line.substr(0,_sz)+std::to_string(i)+line.substr(_sz+1));
                   //cout <<"expand"<<line2<<endl;
                   ee->inq(line2);
               }
           }else {
-              ee->inq(line);
+              string* line2 = new string(line);
+              ee->inq(line2);
           }
       }
       myfile.close();
