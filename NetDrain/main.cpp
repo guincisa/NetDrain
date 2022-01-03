@@ -40,7 +40,7 @@ int main() {
                   size_t __sz= line2->find("*");
                   if (__sz!=std::string::npos){
                       for (int ii = 1 ; ii<256 ; ii++){
-                          string* line3 = new string(line2->substr(0,__sz)+std::to_string(ii)+line2->substr(__sz+1+));
+                          string* line3 = new string(line2->substr(0,__sz)+std::to_string(ii)+line2->substr(__sz+1));
                           ee->inq(line3);
                       }
                       delete line2;
