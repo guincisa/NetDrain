@@ -36,9 +36,15 @@ int main() {
       {
           size_t _sz = line.find("*");
           if (_sz!=std::string::npos){
-              for (int i = 2; i<256 ; i++){
+              for (int i = 1; i<256 ; i++){
                   string* line2 = new string(line.substr(0,_sz)+std::to_string(i)+line.substr(_sz+1));
-                  //cout <<"expand"<<line2<<endl;
+                  size_t __sz= line2->find("*");
+                  if (__sz!=std::string::npos){
+                      for (int ii = 1 ; ii<256 ; ii++){
+                          string* line3 = new string(line2->substr(0,__sz)+std::to_string(ii)+line2->substr(__sz+1+));
+                      }
+                  }
+                //cout <<"expand"<<line2<<endl;
                   ee->inq(line2);
               }
           }else {
