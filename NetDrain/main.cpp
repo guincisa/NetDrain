@@ -29,7 +29,6 @@ int main() {
 #else
     ifstream myfile ("sites.txt");
 #endif
-
     if (myfile.is_open())
     {
       while ( getline (myfile,line) )
@@ -42,10 +41,14 @@ int main() {
                   if (__sz!=std::string::npos){
                       for (int ii = 1 ; ii<256 ; ii++){
                           string* line3 = new string(line2->substr(0,__sz)+std::to_string(ii)+line2->substr(__sz+1+));
+                          ee->inq(line3);
                       }
+                      delete line2;
+                  }
+                  else{
+                      ee->inq(line2);
                   }
                 //cout <<"expand"<<line2<<endl;
-                  ee->inq(line2);
               }
           }else {
               string* line2 = new string(line);
