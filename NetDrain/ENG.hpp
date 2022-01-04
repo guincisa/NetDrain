@@ -42,6 +42,7 @@
 #include <netdb.h>
 #include <cstring>
 #include <arpa/inet.h>
+#include <sys/time.h>
 
 using namespace std;
 
@@ -52,6 +53,9 @@ public:
     static mutex prt;
     static condition_variable cv;
     static queue<string*> siteq;
+    
+    static int sock;
+    
     //static string _website;
     
     static void runSite (int thid) {
@@ -82,24 +86,16 @@ public:
             prt.unlock();
             
             delete z;
-            
-            
         }
-        
     }
     
     static string exec(string command){
-        int sock = 0, valread;
+        int valread;
         struct sockaddr_in serv_addr;
         string Mess = "GET / HTTP/1.1\nHost: "+command+"\n\n";
         
         char buffer[1024] = {0};
-        if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-        {
-            cout << "Socket creation error \n";
-            return "NOK";
-        }
-        
+
         serv_addr.sin_family = AF_INET;
         serv_addr.sin_port = htons(80);
         
@@ -117,7 +113,7 @@ public:
         }
         send(sock , Mess.c_str() , Mess.size() , 0 );
         //printf("Hello message sent\n");
-        valread = read( sock , buffer, 1024);
+        valread = read(sock , buffer, 1024);
         //printf("%s\n",buffer );
         return "OK";
     }
@@ -170,6 +166,7 @@ mutex TH::mtx;
 mutex TH::mtxQ;
 mutex TH::prt;
 queue<string*> TH::siteq;
+int TH::sock;
 
 class ENG{
 public:
@@ -211,7 +208,9 @@ public:
 #endif
     std:thread t[MT];
         
-        
+        if ((TH::sock = socket(AF_INET, SOCK_STREAM, 0)) < 0){
+            cout << "Socket creation error" << endl;
+        }
         
         // spawn n threads:
         for (int i = 0; i < MT; i++) {
@@ -234,6 +233,11 @@ public:
         if (active == 1){
             cout << "[" << s << "]";
         }
+    }
+    uint64_t GetTimeStamp() {
+        struct timeval tv;
+        gettimeofday(&tv,NULL);
+        return tv.tv_sec*(uint64_t)1000000+tv.tv_usec;
     }
 };
 
