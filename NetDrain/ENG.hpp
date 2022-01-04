@@ -96,7 +96,7 @@ public:
         char buffer[1024] = {0};
         if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
         {
-            //printf("\n Socket creation error \n");
+            cout << "Socket creation error \n";
             return "NOK";
         }
         
@@ -106,13 +106,13 @@ public:
         // Convert IPv4 and IPv6 addresses from text to binary form
         if(inet_pton(AF_INET, command.c_str(), &serv_addr.sin_addr)<=0)
         {
-            //printf("\nInvalid address/ Address not supported \n");
+            cout <<" Invalid address/ Address not supported \n";
             return "NOK";
         }
         
         if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
         {
-            //printf("\nConnection Failed \n");
+            cout << "Connection Failed \n";
             return "NOK";
         }
         send(sock , Mess.c_str() , Mess.size() , 0 );
