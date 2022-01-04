@@ -142,12 +142,29 @@ public:
     
     //Insert
     void inq(string* site){
-        //cout << "insert"<<site<<endl;
+        cout << "insert "<<*site<<endl;
         TH::mtxQ.lock();
         TH::siteq.push(site);
         TH::cv.notify_all();
         TH::mtxQ.unlock();
     }
+    
+//    string expand(string _inputString){
+//        size_t _sz = _inputString.find("*");
+//        if (_sz==std::string::npos){
+//            return _inputString;
+//        }
+//        else{
+//            for (int i = 1; i<256 ; i++){
+//                string* line2 = new string(_inputString.substr(0,_sz)+std::to_string(i)+_inputString.substr(_sz+1));
+//                size_t __sz= line2->find("*");
+//        }
+//            
+//                if (__sz!=std::string::npos){
+//                    for (int ii = 1 ; ii<256 ; ii++){
+//                        string* line3 = new string(line2->substr(0,__sz)+std::to_string(ii)+line2->substr(__sz+1));
+//                        ee->inq(line3);
+//    }
     
     ENG(){
         
