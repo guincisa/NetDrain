@@ -41,6 +41,8 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <cstring>
+#include <arpa/inet.h>
+
 using namespace std;
 
 
@@ -66,7 +68,7 @@ public:
             mtxQ.unlock();
             
             
-            //cout << " >>>DOING string " << z <<" "<< thid <<endl;
+            cout << " >>>DOING string " << *z <<" "<< thid <<endl;
             lck.unlock();
             if (exec(*z).compare("OK")==0){
                 prt.lock();
@@ -78,15 +80,48 @@ public:
                 prt.unlock();
             }
             prt.unlock();
-
+            
             delete z;
-
+            
             
         }
         
     }
     
-    static string exec(string command) {
+    static string exec(string command){
+        int sock = 0, valread;
+        struct sockaddr_in serv_addr;
+        string Mess = "GET / HTTP/1.1\nHost: "+command+"\n\n";
+        
+        char buffer[1024] = {0};
+        if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+        {
+            //printf("\n Socket creation error \n");
+            return "NOK";
+        }
+        
+        serv_addr.sin_family = AF_INET;
+        serv_addr.sin_port = htons(80);
+        
+        // Convert IPv4 and IPv6 addresses from text to binary form
+        if(inet_pton(AF_INET, command.c_str(), &serv_addr.sin_addr)<=0)
+        {
+            //printf("\nInvalid address/ Address not supported \n");
+            return "NOK";
+        }
+        
+        if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+        {
+            //printf("\nConnection Failed \n");
+            return "NOK";
+        }
+        send(sock , Mess.c_str() , Mess.size() , 0 );
+        //printf("Hello message sent\n");
+        valread = read( sock , buffer, 1024);
+        //printf("%s\n",buffer );
+        return "OK";
+    }
+    static string exec2(string command) {
         int sockfd, portno=80, n;
         struct sockaddr_in serv_addr;
         struct hostent *server;
@@ -142,29 +177,29 @@ public:
     
     //Insert
     void inq(string* site){
-        cout << "insert "<<*site<<endl;
+        //cout << "insert "<<*site<<endl;
         TH::mtxQ.lock();
         TH::siteq.push(site);
         TH::cv.notify_all();
         TH::mtxQ.unlock();
     }
     
-//    string expand(string _inputString){
-//        size_t _sz = _inputString.find("*");
-//        if (_sz==std::string::npos){
-//            return _inputString;
-//        }
-//        else{
-//            for (int i = 1; i<256 ; i++){
-//                string* line2 = new string(_inputString.substr(0,_sz)+std::to_string(i)+_inputString.substr(_sz+1));
-//                size_t __sz= line2->find("*");
-//        }
-//            
-//                if (__sz!=std::string::npos){
-//                    for (int ii = 1 ; ii<256 ; ii++){
-//                        string* line3 = new string(line2->substr(0,__sz)+std::to_string(ii)+line2->substr(__sz+1));
-//                        ee->inq(line3);
-//    }
+    //    string expand(string _inputString){
+    //        size_t _sz = _inputString.find("*");
+    //        if (_sz==std::string::npos){
+    //            return _inputString;
+    //        }
+    //        else{
+    //            for (int i = 1; i<256 ; i++){
+    //                string* line2 = new string(_inputString.substr(0,_sz)+std::to_string(i)+_inputString.substr(_sz+1));
+    //                size_t __sz= line2->find("*");
+    //        }
+    //
+    //                if (__sz!=std::string::npos){
+    //                    for (int ii = 1 ; ii<256 ; ii++){
+    //                        string* line3 = new string(line2->substr(0,__sz)+std::to_string(ii)+line2->substr(__sz+1));
+    //                        ee->inq(line3);
+    //    }
     
     ENG(){
         
@@ -175,6 +210,7 @@ public:
         int MT = 50;
 #endif
     std:thread t[MT];
+        
         
         
         // spawn n threads:
