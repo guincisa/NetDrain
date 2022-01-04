@@ -54,8 +54,6 @@ public:
     static condition_variable cv;
     static queue<string*> siteq;
     
-    static int sock;
-    
     //static string _website;
     
     static void runSite (int thid) {
@@ -90,7 +88,7 @@ public:
     }
     
     static string exec(string command){
-        int valread;
+        int valread, sock=0;
         struct sockaddr_in serv_addr;
         string Mess = "GET / HTTP/1.1\nHost: "+command+"\n\n";
         
@@ -98,6 +96,10 @@ public:
 
         serv_addr.sin_family = AF_INET;
         serv_addr.sin_port = htons(80);
+        
+        if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0){
+            cout << "Socket creation error" << endl;
+        }
         
         // Convert IPv4 and IPv6 addresses from text to binary form
         if(inet_pton(AF_INET, command.c_str(), &serv_addr.sin_addr)<=0)
@@ -166,7 +168,6 @@ mutex TH::mtx;
 mutex TH::mtxQ;
 mutex TH::prt;
 queue<string*> TH::siteq;
-int TH::sock;
 
 class ENG{
 public:
@@ -208,9 +209,7 @@ public:
 #endif
     std:thread t[MT];
         
-        if ((TH::sock = socket(AF_INET, SOCK_STREAM, 0)) < 0){
-            cout << "Socket creation error" << endl;
-        }
+        
         
         // spawn n threads:
         for (int i = 0; i < MT; i++) {
