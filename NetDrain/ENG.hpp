@@ -43,6 +43,12 @@
 #include <cstring>
 #include <arpa/inet.h>
 #include <sys/time.h>
+#include <fstream>
+#include <iostream>
+
+
+//pthreads
+//https://www.tutorialspoint.com/cplusplus/cpp_multithreading.htm
 
 using namespace std;
 
@@ -53,6 +59,8 @@ public:
     static mutex prt;
     static condition_variable cv;
     static queue<string*> siteq;
+    
+    static ofstream outputFile;
     
     //static string _website;
     
@@ -70,18 +78,21 @@ public:
             mtxQ.unlock();
             
             
-            cout << " >>>DOING string " << *z <<" "<< thid <<endl;
+            //cout << " >>>DOING string " << *z <<" "<< thid <<endl;
             lck.unlock();
+            if (z->compare("END") == 0){
+                outputFile.close();
+                exit;
+            }
             if (exec(*z).compare("OK")==0){
                 prt.lock();
-                cout << *z << " " << thid << " OK" << endl;
+                outputFile << *z << " " << thid << " OK" << endl;
                 prt.unlock();
             }else{
                 prt.lock();
-                cout << *z << " " << thid << " NOK" << endl;
+                outputFile << *z << " " << thid << " NOK" << endl;
                 prt.unlock();
             }
-            prt.unlock();
             
             delete z;
         }
@@ -98,19 +109,20 @@ public:
         serv_addr.sin_port = htons(80);
         
         if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0){
-            cout << "Socket creation error" << endl;
+            //cout << "Socket creation error" << endl;
+            return "NOK";
         }
         
         // Convert IPv4 and IPv6 addresses from text to binary form
         if(inet_pton(AF_INET, command.c_str(), &serv_addr.sin_addr)<=0)
         {
-            cout <<" Invalid address/ Address not supported \n";
+            //cout <<" Invalid address/ Address not supported \n";
             return "NOK";
         }
         
         if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
         {
-            cout << "Connection Failed \n";
+            //cout << "Connection Failed \n";
             return "NOK";
         }
         send(sock , Mess.c_str() , Mess.size() , 0 );
@@ -168,6 +180,8 @@ mutex TH::mtx;
 mutex TH::mtxQ;
 mutex TH::prt;
 queue<string*> TH::siteq;
+ofstream TH::outputFile;
+
 
 class ENG{
 public:
@@ -200,6 +214,12 @@ public:
     //    }
     
     ENG(){
+        
+#ifdef __APPLE__
+    TH::outputFile.open ("/Users/gug/output.txt");
+#else
+        TH::outputFile.open ("output.txt");
+#endif
         
         //std::vector<thread> threads(MT);
 #ifdef __APPLE__
