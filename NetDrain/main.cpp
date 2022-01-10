@@ -36,13 +36,14 @@ std:thread tENG (th2);
     {
         while ( getline (myfile,line) )
         {
-            IPADDEXP* ipad = new IPADDEXP(line);
-            ipad->expand();
-            vector<IPADD*> _a = ipad->getVector();
+            IPADDEXP ipad(line);
+            ipad.expand();
+            vector<IPADD*> _a = ipad.getVector();
             for (IPADD* _s : _a) {
-                std::cout << _s->get() << endl;
-                ee->inq(&_s->get());
-                //find the way to delete allocated
+                string* _ss = new string(_s->get());
+                std::cout << *_ss << endl;
+                ee->inq(_ss);
+                //find the way to delete allocated 
             }
         }
         myfile.close();

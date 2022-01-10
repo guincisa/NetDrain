@@ -98,7 +98,7 @@ public:
         for (int i = 0 ; i < 4 ; i++){
             size_t _sz = p[i].find("-");
             if (_sz!=std::string::npos){
-                cout << "h2" << endl;
+                //cout << "h2" << endl;
                 char * cstr = new char [p[i].length()+1];
                 std::strcpy (cstr, p[i].c_str());
                 char *saveptr1;
@@ -113,7 +113,7 @@ public:
 
         }
         for (int i  = 0 ; i < 4 ; i ++){
-            cout << i << " " << start[i] << " " << end[i]<< endl;
+            //cout << i << " " << start[i] << " " << end[i]<< endl;
             if (!expa[i]){
                 start[i] = std::stoi(p[i]);
                 end[i] = std::stoi(p[i]);
